@@ -27,8 +27,8 @@
 <%-- The markup and script in the following Content element will be placed in the <body> of the page --%>
 <asp:Content ContentPlaceHolderID="PlaceHolderMain" runat="server">
 
-     <!--Crear Nuevas Sugerencias-->   
-     <div id="new-item-form">
+    <!--Crear Nuevas Sugerencias-->
+    <div id="new-item-form">
         Nueva Sugerencia:
        <div class="new-item-form-line">
            <span class="new-item-form-label">Asunto:</span>
@@ -51,16 +51,24 @@
     <p>Sugerencias actuales:</p>
     <div id="sugerencias-list">
     </div>
-    
+
     <!--Detalle de una sugerencia-->
     <div id="item-display">
         <div class="item-display-line">
             <span class="item-display-label">Asunto:</span>
             <span id="item-display-asunto" class="item-display-field"></span>
+            <span class="item-votos-controls">
+                <a class="flecha-raton" onclick="guardarVoto(true);">Si</a>
+                <a class="flecha-raton" onclick="guardarVoto(false);">No</a>
+            </span>
         </div>
         <div class="item-display-line">
             <span class="item-display-label">Sugerencia:</span>
             <span id="item-display-sugerencia" class="item-display-field"></span>
+            <span class="votos-display">
+                <span>Votos:</span>
+                <span id="votos-count"></span>
+            </span>
         </div>
     </div>
     <div class="clear-floats"></div>

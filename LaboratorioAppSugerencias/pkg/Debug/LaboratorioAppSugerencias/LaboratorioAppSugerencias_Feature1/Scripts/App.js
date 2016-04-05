@@ -4,84 +4,136 @@ var Sugerencias = window.Sugerencias || {};
 
 //Sugerencias.SugerenciasApp = function () {
 
-    var context;
-    var sugerenciasList;
-    var sugerencias;
-    var sugerenciaActual;
+var context;
+var sugerenciasList;
+var sugerencias;
+var sugerenciaActual;
 
-    //Funcion para obtener las sugerencias
-    var getSugerencias = function () {
-        sugerenciasList = context.get_web().get_lists().getByTitle('ListaSugerencias');
-        sugerencias = sugerenciasList.getItems(new SP.CamlQuery());
-        context.load(sugerencias);
-        context.executeQueryAsync(onGetSugerenciasSuccess, onGetSugerenciasFail);
-    };
-    //Funcion de callback de sugerenica
-    var onGetSugerenciasSuccess = function (sender, args) {
-        var htmlToRender = [];
-        var sugerenciasEnumerator = sugerencias.getEnumerator();
-        while (sugerenciasEnumerator.moveNext()) {
-            var sugerenciaActual = sugerenciasEnumerator.get_current();
-            htmlToRender.push('<a onclick="mostrarSugerencia(');
-            htmlToRender.push(sugerenciaActual.get_item('ID'));
-            htmlToRender.push(')">');
-            htmlToRender.push(sugerenciaActual.get_item('Asunto'));
-            htmlToRender.push('</a><br />');
+//Funcion para obtener las sugerencias
+var getSugerencias = function () {
+    sugerenciasList = context.get_web().get_lists().getByTitle('ListaSugerencias');
+    sugerencias = sugerenciasList.getItems(new SP.CamlQuery());
+    context.load(sugerencias);
+    context.executeQueryAsync(onGetSugerenciasSuccess, onGetSugerenciasFail);
+};
+//Funcion de callback de sugerenica
+var onGetSugerenciasSuccess = function (sender, args) {
+    var htmlToRender = [];
+    var sugerenciasEnumerator = sugerencias.getEnumerator();
+    while (sugerenciasEnumerator.moveNext()) {
+        var sugerenciaActual = sugerenciasEnumerator.get_current();
+        htmlToRender.push('<a onclick="mostrarSugerencia(');
+        htmlToRender.push(sugerenciaActual.get_item('ID'));
+        htmlToRender.push(')">');
+        htmlToRender.push(sugerenciaActual.get_item('Asunto'));
+        htmlToRender.push('</a><br />');
+    }
+    $('#sugerencias-list').html(htmlToRender.join(''));
+};
+//Funcionde callback de sugerencia
+function onGetSugerenciasFail(sender, args) {
+    alert('Error:' + args.get_message());
+};
+
+//Funcion para mostrar el detalle de la sugerencia
+var mostrarSugerencia = function (id) {
+    sugerenciaActual = sugerenciasList.getItemById(id);
+    context.load(sugerenciaActual);
+    context.executeQueryAsync(onDisplaySugerenciaSuccess, onDisplaySugerenciaFail);
+};
+//Funcion de callback de detalle sugerencia
+var onDisplaySugerenciaSuccess = function (sender, args) {
+    $('#item-display').fadeOut('fast', function () {
+        $('#item-display-asunto').html(sugerenciaActual.get_item('Asunto'));
+        $('#item-display-sugerencia').html(sugerenciaActual.get_item('Sugerencia'));
+        contarVotos();
+        $('#item-display').fadeIn('fast');
+    });
+};
+//Funcion de callback de detalle sugerenica
+var onDisplaySugerenciaFail = function (sender, args) {
+    alert('Error:' + args.get_message());
+};
+
+//Funcion para crear una sugerencia
+var crearSugerencia = function () {
+    var itemCreateInfo = SP.ListItemCreationInformation();
+    sugerenciaActual = sugerenciasList.addItem(itemCreateInfo);
+    sugerenciaActual.set_item('Asunto', $('#asunto-input').val().toString());
+    sugerenciaActual.set_item('Sugerencia', $('#sugerencia-input').val().toString());
+    sugerenciaActual.update();
+    context.load(sugerenciaActual);
+    context.executeQueryAsync(onCreateSugerenciaSuccess, onCreateSugerenciaFail);
+};
+//Fucion de callback de crear una sugerencia
+var onCreateSugerenciaSuccess = function () {
+    //Sugerencias.SugerenciasApp.get_sugerencias();
+    getSugerencias();
+};
+//Funcion de callback de crear una sugerencia
+var onCreateSugerenciaFail = function (sender, args) {
+    alert('Error:' + args.get_message());
+};
+
+//Funcion para inicializar el context y cargar las sugerencias
+var init = function () {
+    context = SP.ClientContext.get_current();
+    //Sugerencias.SugerenciasApp.get_sugerencias();
+    getSugerencias();
+};
+
+//Recibir votos de una sugerencia
+var contarVotos = function () {
+    var votos = 0;
+    var url = _spPageContextInfo.webServerRelativeUrl + "/_api/web/lists/getByTitle('ListaSugerenciasLookup')/items";
+    $.ajax({
+        url: url + "?$filter=SugerenciaLookup eq " + sugerenciaActual.get_item('ID'),
+        type: "GET",
+        headers: { "accept": "application/json;odata=verbose" },
+        success: function (data) {
+            $.each(data.d.results, function (i, result) {
+                if (result.Positivo) {
+                    votos++;
+                } else {
+                    votos--;
+                }
+            });
+            $('#votos-count').html(votos);
+        },
+        error: function (err) {
+            alert(JSON.stringify(err));
         }
-        $('#sugerencias-list').html(htmlToRender.join(''));
-    };
-    //Funcionde callback de sugerencia
-    function onGetSugerenciasFail(sender, args) {
-        alert('Error:' + args.get_message());
-    };
+    });
+};
 
-    //Funcion para mostrar el detalle de la sugerencia
-    var mostrarSugerencia = function (id) {
-        sugerenciaActual = sugerenciasList.getItemById(id);
-        context.load(sugerenciaActual);
-        context.executeQueryAsync(onDisplaySugerenciaSuccess, onDisplaySugerenciaFail);
-    };
-    //Funcion de callback de detalle sugerenica
-    var onDisplaySugerenciaSuccess = function (sender, args) {
-        $('#item-display').fadeOut('fast', function () {
-            $('#item-display-asunto').html(sugerenciaActual.get_item('Asunto'));
-            $('#item-display-sugerencia').html(sugerenciaActual.get_item('Sugerencia'));
-            $('#item-display').fadeIn('fast');
-        });
-    };
-    //Funcion de callback de detalle sugerenica
-    var onDisplaySugerenciaFail = function (sender, args) {
-        alert('Error:' + args.get_message());
-    };
+//Registrar un voto
+var guardarVoto = function (pos) {
+    var url = _spPageContextInfo.webServerRelativeUrl + "/_api/web/lists/getByTitle('ListaSugerenciasLookup')/items";
+    var formDigest = $('#__REQUESTDIGEST').val();
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: JSON.stringify({
+            '__metadata': { 'type': 'SP.Data.ListaSugerenciasLookupListItem' },
+            'Positivo': pos,
+            'SugerenciaLookupId': sugerenciaActual.get_item('ID')
+        }),
+        headers: {
+            'accept': 'application/json;odata=verbose',
+            'content-type': 'application/json;odata=verbose',
+            'X-RequestDigest': formDigest
+        },
+        success: function () {
+            alert("Gracias por tu voto");
+            contarVotos();
+        },
+        error: function (err) {
+            alert(JSON.stringify(err));
+        }
+    });
+};
 
-    //Funcion para crear una sugerencia
-    var crearSugerencia = function () {
-        var itemCreateInfo = SP.ListItemCreationInformation();
-        sugerenciaActual = sugerenciasList.addItem(itemCreateInfo);
-        sugerenciaActual.set_item('Asunto', $('#asunto-input').val().toString());
-        sugerenciaActual.set_item('Sugerencia', $('#sugerencia-input').val().toString());
-        sugerenciaActual.update();
-        context.load(sugerenciaActual);
-        context.executeQueryAsync(onCreateSugerenciaSuccess, onCreateSugerenciaFail);
-    };
-    //Fucion de callback de crear una sugerencia
-    var onCreateSugerenciaSuccess = function () {
-        //Sugerencias.SugerenciasApp.get_sugerencias();
-        getSugerencias();
-    };
-    //Funcion de callback de crear una sugerencia
-    var onCreateSugerenciaFail = function (sender, args) {
-        alert('Error:' + args.get_message());
-    };
-
-    //Funcion para inicializar el context y cargar las sugerencias
-    var init = function () {
-        context = SP.ClientContext.get_current();
-        //Sugerencias.SugerenciasApp.get_sugerencias();
-        getSugerencias();
-    };
-
-    //Return de funcion para exponer los miembre publicos
+//Return de funcion para exponer los miembre publicos
 //    return {
 //        create_sugerencia: crearSugerencia,
 //        display_sugerencia: mostrarSugerencia,

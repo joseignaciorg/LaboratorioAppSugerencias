@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Feature xmlns="http://schemas.microsoft.com/sharepoint/" Id="1e710486-2d86-4d7a-9fc9-f149460a227b" Scope="Web" Title="LaboratorioAppSugerencias Feature2" Version="1.0.0.0">
+  <ElementManifests>
+    <ElementManifest Location="ListaSugerenciasLookup\Elements.xml" />
+    <ElementFile Location="ListaSugerenciasLookup\Schema.xml" />
+    <ElementManifest Location="ListaSugerenciasLookupInstance\Elements.xml" />
+  </ElementManifests>
+  <UpgradeActions>
+    <VersionRange>
+      <ApplyElementManifests>
+        <ElementManifest Location="ListaSugerenciasLookup\Elements.xml" />
+        <ElementManifest Location="ListaSugerenciasLookupInstance\Elements.xml" />
+      </ApplyElementManifests>
+    </VersionRange>
+  </UpgradeActions>
+</Feature>

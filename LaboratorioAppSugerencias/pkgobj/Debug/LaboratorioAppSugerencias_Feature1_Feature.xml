@@ -19,6 +19,9 @@
     <ElementManifest Location="ListaSugerenciasInstance\Elements.xml" />
     <ElementManifest Location="ListaSugerencias\Elements.xml" />
     <ElementFile Location="ListaSugerencias\Schema.xml" />
+    <ElementManifest Location="SugerenciaLookup\Elements.xml" />
+    <ElementManifest Location="Positivo\Elements.xml" />
+    <ElementManifest Location="SugerenciasLookup\Elements.xml" />
   </ElementManifests>
   <UpgradeActions>
     <VersionRange>
@@ -32,6 +35,9 @@
         <ElementManifest Location="Sugerencias\Elements.xml" />
         <ElementManifest Location="ListaSugerenciasInstance\Elements.xml" />
         <ElementManifest Location="ListaSugerencias\Elements.xml" />
+        <ElementManifest Location="SugerenciaLookup\Elements.xml" />
+        <ElementManifest Location="Positivo\Elements.xml" />
+        <ElementManifest Location="SugerenciasLookup\Elements.xml" />
       </ApplyElementManifests>
     </VersionRange>
   </UpgradeActions>
