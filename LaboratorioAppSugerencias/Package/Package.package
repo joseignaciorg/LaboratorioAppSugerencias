@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package dslVersion="1.0.0.0" 
+        Id="7da3a554-7a7a-49c3-9519-abbf75195594" 
+        solutionId="7da3a554-7a7a-49c3-9519-abbf75195594" 
+        xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel" 
+        name="LaboratorioAppSugerencias"
+        sharePointProductVersion="16.0">
+  <features>
+        <featureReference itemId="9c2e93fc-2c45-47eb-9041-6c31f192e799" />
+  </features>
+</package>
